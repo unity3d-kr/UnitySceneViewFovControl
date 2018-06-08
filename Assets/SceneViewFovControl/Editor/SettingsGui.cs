@@ -6,7 +6,7 @@ using System;
 #error This script must be placed under "Editor/" directory.
 #endif
 
-namespace UTJ.UnityEditorExtension.SceneViewFovControl {
+namespace UTJ.UnityEditor.Extension.SceneViewFovControl {
 
 [InitializeOnLoad]
 class SettingsGui : EditorWindow {
@@ -56,13 +56,34 @@ class SettingsGui : EditorWindow {
 
         GUILayout.Space(8);
 
+        if(d.AlwaysShowResetButton) {
+            GUILayout.Label("<Reset Scene FoV> Button Showing Duration (sec): Infinite");
+        } else if(d.NeverShowResetButton) {
+            GUILayout.Label("<Reset Scene FoV> Button Showing Duration (sec): Never");
+        } else {
+            GUILayout.Label("<Reset Scene FoV> Button Showing Duration (sec):" + d.ButtonShowingDurationInSeconds);
+        }
+        d.ButtonShowingDurationInSeconds = GUILayout.HorizontalSlider(d.ButtonShowingDurationInSeconds, Settings.MinButtonShowingDurationInSeconds, Settings.MaxButtonShowingDurationInSeconds);
+
         if(d.MaxFov < d.MinFov) {
             d.MinFov = d.MaxFov;
         }
 
         GUILayout.Space(20);
 
-        UnityEditor.EditorGUILayout.BeginHorizontal();
+        if(SceneViewFovControl.EnableFlag) {
+            if(GUILayout.Button("Disable")) {
+                SceneViewFovControl.Enable(false);
+            }
+        } else {
+            if(GUILayout.Button("Enable")) {
+                SceneViewFovControl.Enable(true);
+            }
+        }
+
+        GUILayout.Space(20);
+
+        EditorGUILayout.BeginHorizontal();
         {
             if(GUILayout.Button("Save")) {
                 Settings.Save();
@@ -87,7 +108,7 @@ class SettingsGui : EditorWindow {
                 this.Close();
             }
         }
-        UnityEditor.EditorGUILayout.EndHorizontal();
+        EditorGUILayout.EndHorizontal();
     }
 }
 

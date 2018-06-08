@@ -7,13 +7,13 @@ using System.Collections.Generic;
 #error This script must be placed under "Editor/" directory.
 #endif
 
-namespace UTJ.UnityEditorExtension.SceneViewFovControl {
+namespace UTJ.UnityEditor.Extension.SceneViewFovControl {
 
 [InitializeOnLoad]
 public static class SceneViewFovControl
 {
     static Dictionary<int, Status> statuses = new Dictionary<int, Status>();
-    static bool EnableFlag = false;
+    static public bool EnableFlag = false;
 
     static SceneViewFovControl() {
         Enable(true);
@@ -49,9 +49,7 @@ public static class SceneViewFovControl
     static void OnSceneGUI(SceneView sceneView) {
         Status s = GetOrAddStatus(sceneView);
         if(s != null) {
-            Handles.BeginGUI();
             s.OnSceneGUI(sceneView);
-            Handles.EndGUI();
         }
     }
 

@@ -7,28 +7,46 @@ using System.Reflection;
 #error This script must be placed under "Editor/" directory.
 #endif
 
-namespace UTJ.UnityEditorExtension.SceneViewFovControl {
+namespace UTJ.UnityEditor.Extension.SceneViewFovControl {
 
 static class SceneViewHiddenApi {
-    static readonly Type typeSceneView = typeof(UnityEditor.SceneView);
-    static readonly FieldInfo fi_onPreSceneGUIDelegateFieldInfo = typeSceneView.GetField(
-        "onPreSceneGUIDelegate"
-        , BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public
-    );
+    static bool initialized = false;
+    static FieldInfo fi;
+
+    static FieldInfo onPreSceneGUIDelegateFieldInfo {
+        get {
+            if(fi != null || initialized) {
+                return fi;
+            }
+
+            initialized = true;
+
+            // UnityEditor.SceneView.onPreSceneGUIDelegateFieldInfo
+            fi = typeof(SceneView).GetField(
+                "onPreSceneGUIDelegate",
+                  BindingFlags.Static
+                | BindingFlags.NonPublic
+                | BindingFlags.Public
+            );
+            return fi;
+        }
+    }
 
     static SceneView.OnSceneFunc onPreSceneGUIDelegate {
         get {
-            if(fi_onPreSceneGUIDelegateFieldInfo == null) {
+            var fi = onPreSceneGUIDelegateFieldInfo;
+            if(fi == null) {
                 return null;
             }
-            return fi_onPreSceneGUIDelegateFieldInfo.GetValue(null) as SceneView.OnSceneFunc;
+            return fi.GetValue(null) as SceneView.OnSceneFunc;
         }
 
         set {
-            if(fi_onPreSceneGUIDelegateFieldInfo == null) {
+            var fi = onPreSceneGUIDelegateFieldInfo;
+            if(fi == null) {
                 return;
             }
-            fi_onPreSceneGUIDelegateFieldInfo.SetValue(null, value);
+            fi.SetValue(null, value);
         }
     }
 

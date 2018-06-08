@@ -6,9 +6,12 @@ using System;
 #error This script must be placed under "Editor/" directory.
 #endif
 
-namespace UTJ.UnityEditorExtension.SceneViewFovControl {
+namespace UTJ.UnityEditor.Extension.SceneViewFovControl {
     static class Settings {
-        public const string VersionString = "0.1.11";
+        static SettingsData data = new SettingsData();
+        static SettingsData loadedData = new SettingsData();
+
+        public const string VersionString = "0.1.4";
         public const string MenuItemName = "Edit/Scene View FoV Settings";
         public const string EditorPrefsKey = "UTJ.UnityEditor.Extension.SceneViewFovControl";
 
@@ -20,16 +23,33 @@ namespace UTJ.UnityEditorExtension.SceneViewFovControl {
         public const float MinFovMax = 160.0f;
         public const float MaxFovMin = 1.0f;
         public const float MaxFovMax = 160.0f;
+        public const float ButtonShowingDurationInSeconds = 2.0f;
+        public const float MinButtonShowingDurationInSeconds = 0.0f;
+        public const float MaxButtonShowingDurationInSeconds = 5.0f;
 
         public const string WindowTitle = "FoV Control";
 
-        public static SettingsData Data { get; set; }
-        public static SettingsData LoadedData { get; set; }
+        public static SettingsData Data {
+            get {
+                return data;
+            }
+
+            set {
+                data = value;
+            }
+        }
+
+        public static SettingsData LoadedData {
+            get {
+                return loadedData;
+            }
+
+            set {
+                loadedData = value;
+            }
+        }
 
         static Settings() {
-            Data = new SettingsData();
-            LoadedData = new SettingsData();
-
             Reset();
 
             if(EditorPrefs.HasKey(EditorPrefsKey)) {
@@ -72,6 +92,8 @@ namespace UTJ.UnityEditorExtension.SceneViewFovControl {
         public float MinFov;
         public float MaxFov;
 
+        public float ButtonShowingDurationInSeconds;
+
         public SettingsData Clone() {
             return (SettingsData) this.MemberwiseClone();
         }
@@ -88,6 +110,24 @@ namespace UTJ.UnityEditorExtension.SceneViewFovControl {
             FovQuickMultiplier = 5.0f;
             MinFov = 2.0f;
             MaxFov = 160.0f;
+
+            ButtonShowingDurationInSeconds = Settings.ButtonShowingDurationInSeconds;
+        }
+
+        public bool AlwaysShowResetButton {
+            get {
+                return ButtonShowingDurationInSeconds == Settings.MaxButtonShowingDurationInSeconds;
+            }
+        }
+
+        public bool NeverShowResetButton {
+            get {
+                return ButtonShowingDurationInSeconds == Settings.MinButtonShowingDurationInSeconds;
+            }
+        }
+
+        public bool Dirty {
+            get; set;
         }
     }
 }
