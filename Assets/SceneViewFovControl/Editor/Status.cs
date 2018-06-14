@@ -65,11 +65,15 @@ class Status {
         if(EditorApplication.timeSinceStartup < showResetButtonTime || settings.AlwaysShowResetButton) {
             Handles.BeginGUI();
 			Rect r = new Rect( 10, 10, 60, 16 );
-			string fovstr; 
+			string fovstr;
 			if( r.Contains( Event.current.mousePosition ) )
+			{
 				fovstr = "Reset";
+				showResetButtonTime = EditorApplication.timeSinceStartup + settings.ButtonShowingDurationInSeconds;
+			}
 			else
 				fovstr = string.Format( fov >= 100 ? "Fov {0:0}" : "Fov {0:0.0}", fov );
+
             if (GUI.Button(r, fovstr)) {
                 reset = true;
             }
